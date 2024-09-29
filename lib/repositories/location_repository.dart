@@ -7,6 +7,6 @@ class LocationRepository {
   LocationRepository(this.apiService);
 
   Future<List<Location>> fetchAllLocations(String companyId) async {
-    return apiService.fetchLocations(int.parse(companyId));
+    return apiService.fetchLocations(companyId);
   }
 }

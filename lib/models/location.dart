@@ -1,9 +1,14 @@
-class Location {
-  final int id;
-  final String name;
-  final int parentId;
+import 'package:equatable/equatable.dart';
 
-  Location({required this.id, required this.name, required this.parentId});
+class Location extends Equatable {
+  final String id;
+  final String name;
+  final String? parentId;
+
+  const Location({required this.id, required this.name, this.parentId});
+
+  @override
+  List<Object?> get props => [id, name, parentId];
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(

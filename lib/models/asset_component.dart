@@ -7,7 +7,7 @@ class Component extends Asset {
   final String gatewayId;
   final String? parentId;
 
-  Component({
+  const Component({
     required super.id,
     required super.name,
     required this.sensorId,
@@ -15,7 +15,10 @@ class Component extends Asset {
     required this.status,
     required this.gatewayId,
     this.parentId,
-  });
+  }) : super();
+
+  @override
+  List<Object?> get props => [id, name, sensorId, sensorType, status, gatewayId, parentId];
 
   factory Component.fromJson(Map<String, dynamic> json) {
     return Component(

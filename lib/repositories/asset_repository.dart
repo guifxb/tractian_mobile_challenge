@@ -7,6 +7,6 @@ class AssetRepository {
   AssetRepository(this.apiService);
 
   Future<List<Asset>> fetchAllAssets(String companyId) async {
-    return apiService.fetchAssets(int.parse(companyId));
+    return apiService.fetchAssets(companyId);
   }
 }

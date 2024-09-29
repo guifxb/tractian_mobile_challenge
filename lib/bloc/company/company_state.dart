@@ -20,10 +20,10 @@ class CompanyLoaded extends CompanyState {
 }
 
 class CompanyError extends CompanyState {
-  final String error;
+  final String message;
 
-  const CompanyError(this.error);
+  const CompanyError(this.message);
 
   @override
-  List<Object?> get props => [error];
+  List<Object?> get props => [message];
 }

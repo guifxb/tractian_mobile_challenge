@@ -14,7 +14,7 @@ void main() {
 
     test('fetches data successfully', () async {
       final uri = Uri.parse('https://example.com/companies');
-      final mockResponse = jsonEncode([{'id': 1, 'name': 'Company A'}]);
+      final mockResponse = jsonEncode([{'id': '1', 'name': 'Company A'}]);
 
       when(mockClient.get(uri)).thenAnswer((_) async => http.Response(mockResponse, 200));
 

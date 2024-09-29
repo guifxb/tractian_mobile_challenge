@@ -21,7 +21,7 @@ void main() {
     // Testing endpoint /companies
     test('fetches companies successfully', () async {
       final mockResponse = jsonEncode([
-        {'id': 1, 'name': 'Company A'}
+        {'id': '1', 'name': 'Company A'}
       ]);
 
       when(mockClient.get(Uri.parse('https://example.com/companies')))
@@ -42,14 +42,14 @@ void main() {
     // Testing endpoint /companies/:companyId/locations
     test('fetches locations successfully', () async {
       final mockResponse = jsonEncode([
-        {'id': 1, 'name': 'Location A', 'parentId': 1}
+        {'id': '1', 'name': 'Location A', 'parentId': '1'}
       ]);
 
       when(mockClient
               .get(Uri.parse('https://example.com/companies/1/locations')))
           .thenAnswer((_) async => http.Response(mockResponse, 200));
 
-      final result = await apiService.fetchLocations(1);
+      final result = await apiService.fetchLocations('1');
       expect(result, isA<List<Location>>());
       expect(result.first.name, equals('Location A'));
     });
@@ -59,7 +59,7 @@ void main() {
               .get(Uri.parse('https://example.com/companies/1/locations')))
           .thenAnswer((_) async => http.Response('Not Found', 404));
 
-      expect(() => apiService.fetchLocations(1), throwsException);
+      expect(() => apiService.fetchLocations('1'), throwsException);
     });
 
     // Test for Component
@@ -78,7 +78,7 @@ void main() {
       when(mockClient.get(Uri.parse('https://example.com/locations/1/assets')))
           .thenAnswer((_) async => http.Response(mockResponse, 200));
 
-      final result = await apiService.fetchAssets(1);
+      final result = await apiService.fetchAssets('1');
       expect(result, isA<List>());
       expect(result.first, isA<Component>());
       expect((result.first as Component).sensorType, equals('vibration'));
@@ -93,7 +93,7 @@ void main() {
       when(mockClient.get(Uri.parse('https://example.com/locations/1/assets')))
           .thenAnswer((_) async => http.Response(mockResponse, 200));
 
-      final result = await apiService.fetchAssets(1);
+      final result = await apiService.fetchAssets('1');
       expect(result, isA<List>());
       expect(result.first, isA<AssetWithLocation>());
       expect((result.first as AssetWithLocation).locationId, equals('LOC123'));
@@ -102,7 +102,7 @@ void main() {
       when(mockClient.get(Uri.parse('https://example.com/locations/1/assets')))
           .thenAnswer((_) async => http.Response('Not Found', 404));
 
-      expect(() => apiService.fetchAssets(1), throwsException);
+      expect(() => apiService.fetchAssets('1'), throwsException);
     });
 
     // Test for SubAsset
@@ -114,7 +114,7 @@ void main() {
       when(mockClient.get(Uri.parse('https://example.com/locations/1/assets')))
           .thenAnswer((_) async => http.Response(mockResponse, 200));
 
-      final result = await apiService.fetchAssets(1);
+      final result = await apiService.fetchAssets('1');
       expect(result, isA<List>());
       expect(result.first, isA<SubAsset>());
       expect((result.first as SubAsset).parentId, equals('ASSET_PARENT123'));
@@ -123,16 +123,13 @@ void main() {
     // Test for unknown asset type
     test('throws exception for unknown asset type', () async {
       final mockResponse = jsonEncode([
-        {
-          "id": "4",
-          "name": "Unknown Asset"
-        }
+        {"id": "4", "name": "Unknown Asset"}
       ]);
 
       when(mockClient.get(Uri.parse('https://example.com/locations/1/assets')))
           .thenAnswer((_) async => http.Response(mockResponse, 200));
 
-      expect(() => apiService.fetchAssets(1), throwsException);
+      expect(() => apiService.fetchAssets('1'), throwsException);
     });
 
     // Testing error 500 for companies
@@ -149,7 +146,7 @@ void main() {
               .get(Uri.parse('https://example.com/companies/1/locations')))
           .thenAnswer((_) async => http.Response('Internal Server Error', 500));
 
-      expect(() => apiService.fetchLocations(1), throwsException);
+      expect(() => apiService.fetchLocations('1'), throwsException);
     });
 
     // Testing error 500 for assets
@@ -157,7 +154,7 @@ void main() {
       when(mockClient.get(Uri.parse('https://example.com/locations/1/assets')))
           .thenAnswer((_) async => http.Response('Internal Server Error', 500));
 
-      expect(() => apiService.fetchAssets(1), throwsException);
+      expect(() => apiService.fetchAssets('1'), throwsException);
     });
   });
 }

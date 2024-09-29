@@ -8,6 +8,8 @@ class CompanyBloc extends Bloc<CompanyEvent, CompanyState> {
 
   CompanyBloc(this.companyRepository) : super(CompanyLoading()) {
     on<FetchCompanies>(_onFetchCompanies);
+
+    add(FetchCompanies());
   }
 
   Future<void> _onFetchCompanies(

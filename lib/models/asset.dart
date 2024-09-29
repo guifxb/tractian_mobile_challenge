@@ -1,15 +1,19 @@
+import 'package:equatable/equatable.dart';
 import 'asset_component.dart';
 import 'asset_sub_asset.dart';
 import 'asset_with_location.dart';
 
-class Asset {
+class Asset extends Equatable {
   final String id;
   final String name;
 
-  Asset({
+  const Asset({
     required this.id,
     required this.name,
   });
+
+  @override
+  List<Object?> get props => [id, name];
 
   factory Asset.fromJson(Map<String, dynamic> json) {
     if (json['sensorType'] != null) {
