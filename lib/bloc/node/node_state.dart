@@ -5,10 +5,12 @@ abstract class NodeState extends Equatable {
   const NodeState();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
 class NodeLoading extends NodeState {}
+
+class NodeProcessing extends NodeState {}
 
 class NodeLoaded extends NodeState {
   final List<Node> nodes;
@@ -16,7 +18,7 @@ class NodeLoaded extends NodeState {
   const NodeLoaded(this.nodes);
 
   @override
-  List<Object?> get props => [nodes];
+  List<Object> get props => [nodes];
 }
 
 class NodeError extends NodeState {
@@ -25,5 +27,5 @@ class NodeError extends NodeState {
   const NodeError(this.message);
 
   @override
-  List<Object?> get props => [message];
+  List<Object> get props => [message];
 }

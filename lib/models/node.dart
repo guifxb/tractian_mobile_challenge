@@ -7,9 +7,9 @@ class Node extends Equatable {
   final String? status;
   final String? sensorType;
   final List<Node> children;
-  final int hierarchyLevel;
+  int hierarchyLevel;
 
-  const Node({
+  Node({
     required this.id,
     required this.name,
     required this.type,

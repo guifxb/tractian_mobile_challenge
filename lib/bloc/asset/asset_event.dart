@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:equatable/equatable.dart';
-
 abstract class AssetEvent extends Equatable {
   const AssetEvent();
 

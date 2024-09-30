@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/asset_repository.dart';
 import '../../repositories/location_repository.dart';
@@ -23,7 +24,8 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
       final assets = await assetRepository.fetchAssets(event.companyId);
       final locations = await locationRepository.fetchAllLocations(event.companyId);
 
-      final nodes = buildNodeTree(assets, locations);
+      emit(NodeProcessing());
+      final nodes = await compute(buildNodeTreeWrapper, [assets, locations]);
 
       emit(NodeLoaded(nodes));
     } catch (e) {

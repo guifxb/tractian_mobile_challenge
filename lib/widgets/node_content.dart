@@ -13,6 +13,8 @@ class NodeContent extends StatelessWidget {
       builder: (context, state) {
         if (state is NodeLoading) {
           return const Center(child: CircularProgressIndicator());
+        } else if (state is NodeProcessing) {
+          return const Center(child: Text("Processing nodes..."));
         } else if (state is NodeError) {
           return Center(child: Text("Error: ${state.message}"));
         } else if (state is NodeLoaded) {

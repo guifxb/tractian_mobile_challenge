@@ -10,20 +10,24 @@ List<Node> buildNodeTreeWrapper(List<dynamic> args) {
 
 List<Node> buildNodeTree(List<Asset> assets, List<Location> locations) {
   final Map<String, Node> nodeMap = {};
+  final Map<String, List<Node>> locationChildren = {};
+  final Map<String, List<Node>> assetChildren = {};
 
   for (var location in locations) {
-    nodeMap[location.id] = Node(
+    final node = Node(
       id: location.id,
       name: location.name,
       type: 'location',
       children: [],
       hierarchyLevel: 0,
     );
+    nodeMap[location.id] = node;
+    locationChildren[location.parentId ?? ''] = [...(locationChildren[location.parentId ?? ''] ?? []), node];
   }
 
   for (var asset in assets) {
     bool isComponent = asset.sensorType != "";
-    nodeMap[asset.id] = Node(
+    final node = Node(
       id: asset.id,
       name: asset.name,
       type: isComponent ? 'component' : 'asset',
@@ -32,65 +36,61 @@ List<Node> buildNodeTree(List<Asset> assets, List<Location> locations) {
       children: [],
       hierarchyLevel: 0,
     );
+    nodeMap[asset.id] = node;
+
+    if (asset.locationId.isNotEmpty) {
+      locationChildren[asset.locationId] = [...(locationChildren[asset.locationId] ?? []), node];
+    }
+    if (asset.parentId.isNotEmpty) {
+      assetChildren[asset.parentId] = [...(assetChildren[asset.parentId] ?? []), node];
+    }
   }
 
-  void addChildren(Node parentNode) {
-    for (var asset in assets) {
-      if (asset.parentId == parentNode.id || asset.locationId == parentNode.id) {
-        var childNode = nodeMap[asset.id]!.copyWith(
-          hierarchyLevel: parentNode.hierarchyLevel + 1,
-        );
-        parentNode.children.add(childNode);
-        addChildren(childNode);
-      }
+  void addChildren(Node parentNode, int hierarchyLevel) {
+    parentNode.hierarchyLevel = hierarchyLevel;
+
+    final childrenFromLocations = locationChildren[parentNode.id] ?? [];
+    final childrenFromAssets = assetChildren[parentNode.id] ?? [];
+
+    parentNode.children.addAll(childrenFromLocations);
+    parentNode.children.addAll(childrenFromAssets);
+
+    for (var child in parentNode.children) {
+      addChildren(child, hierarchyLevel + 1);
     }
 
-    for (var location in locations) {
-      if (location.parentId == parentNode.id) {
-        var childNode = nodeMap[location.id]!.copyWith(
-          hierarchyLevel: parentNode.hierarchyLevel + 1,
-        );
-        parentNode.children.add(childNode);
-        addChildren(childNode);
-      }
-    }
+    parentNode.children.sort((a, b) {
+      if (a.children.isNotEmpty && b.children.isEmpty) return -1;
+      if (a.children.isEmpty && b.children.isNotEmpty) return 1;
+      return compareNodeTypes(a, b);
+    });
   }
 
   List<Node> rootNodes = [];
 
   for (var location in locations) {
-    if (location.parentId == "") {
+    if (location.parentId == "" || location.parentId.isEmpty) {
       var rootNode = nodeMap[location.id]!;
-      addChildren(rootNode);
+      addChildren(rootNode, 1);
       rootNodes.add(rootNode);
     }
   }
 
   for (var asset in assets) {
-    if (asset.parentId == "" && asset.locationId == "") {
+    if (asset.parentId.isEmpty && asset.locationId.isEmpty) {
       var rootNode = nodeMap[asset.id]!;
-      addChildren(rootNode);
+      addChildren(rootNode, 1);
       rootNodes.add(rootNode);
     }
   }
 
-  List<Node> sortedNodes = [];
-  for (var node in rootNodes) {
-    sortedNodes.add(node);
-  }
+  rootNodes.sort((a, b) {
+    if (a.children.isNotEmpty && b.children.isEmpty) return -1;
+    if (a.children.isEmpty && b.children.isNotEmpty) return 1;
+    return compareNodeTypes(a, b);
+  });
 
-  List<Node> nodesWithChildren = [];
-  List<Node> nodesWithoutChildren = [];
-
-  for (var node in sortedNodes) {
-    if (node.children.isNotEmpty) {
-      nodesWithChildren.add(node);
-    } else {
-      nodesWithoutChildren.add(node);
-    }
-  }
-
-  return [...nodesWithChildren, ...nodesWithoutChildren];
+  return rootNodes;
 }
 
 int compareNodeTypes(Node a, Node b) {
