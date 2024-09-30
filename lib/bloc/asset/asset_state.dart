@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import '../../models/asset.dart';
-import '../../models/node.dart';
 
 abstract class AssetState extends Equatable {
   const AssetState();

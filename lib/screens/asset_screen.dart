@@ -25,7 +25,8 @@ class AssetScreen extends StatefulWidget {
 class _AssetScreenState extends State<AssetScreen> {
   List<Node> _nodes = [];
   String _searchQuery = "";
-  List<bool> _filterSelection = [false, false, false, false];
+  final List<bool> _filterSelection = [false, false, false, false];
+  int _maxHierarchyLevel = 1;
 
   @override
   void initState() {
@@ -46,9 +47,47 @@ class _AssetScreenState extends State<AssetScreen> {
     }
   }
 
+  List<Node> _applyFiltersAndSearch(List<Node> nodes) {
+    List<Node> filteredNodes = [];
+
+    for (var node in nodes) {
+      final passesFilter = _passesFilter(node);
+      final passesSearch = _passesSearch(node);
+
+      final filteredChildren = _applyFiltersAndSearch(node.children);
+
+      if (filteredChildren.isNotEmpty) {
+        filteredNodes.add(node.copyWith(children: filteredChildren));
+      } else if (passesFilter && passesSearch) {
+        filteredNodes.add(node);
+      }
+    }
+
+    return filteredNodes;
+  }
+
+  bool _passesFilter(Node node) {
+    bool filterEnergy = !_filterSelection[0] || node.sensorType == "energy";
+    bool filterVibration = !_filterSelection[1] || node.sensorType == "vibration";
+    bool filterAlert = !_filterSelection[2] || node.status == "alert";
+    bool filterOperating = !_filterSelection[3] || node.status == "operating";
+
+    return filterEnergy && filterVibration && filterAlert && filterOperating;
+  }
+
+  bool _passesSearch(Node node) {
+    return node.name.toLowerCase().contains(_searchQuery.toLowerCase());
+  }
+
   void _onFilterButtonTapped(int index) {
     setState(() {
       _filterSelection[index] = !_filterSelection[index];
+    });
+  }
+
+  void _updateMaxHierarchyLevel(int level) {
+    setState(() {
+      _maxHierarchyLevel = level;
     });
   }
 
@@ -63,7 +102,8 @@ class _AssetScreenState extends State<AssetScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: const InputDecoration(
-                labelText: "Search",
+                prefixIcon: Icon(Icons.search),
+                labelText: "Search location or asset",
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {
@@ -92,14 +132,18 @@ class _AssetScreenState extends State<AssetScreen> {
           builder: (context, assetState) {
             return BlocBuilder<LocationBloc, LocationState>(
               builder: (context, locationState) {
-                if (assetState is AssetLoading || locationState is LocationLoading) {
+                if (assetState is AssetLoading ||
+                    locationState is LocationLoading) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (assetState is AssetError || locationState is LocationError) {
+                } else if (assetState is AssetError ||
+                    locationState is LocationError) {
                   return const Center(child: Text("Error loading data"));
-                } else if (assetState is AssetLoaded && locationState is LocationLoaded) {
-                  final filteredNodes = _nodes.where((node) {
-                    return node.name.toLowerCase().contains(_searchQuery.toLowerCase());
-                  }).toList();
+                } else if (assetState is AssetLoaded &&
+                    locationState is LocationLoaded) {
+                  final filteredNodes = _applyFiltersAndSearch(_nodes);
+
+                  final double calculatedWidth = MediaQuery.of(context).size.width +
+                      (_maxHierarchyLevel * 40);
 
                   return Column(
                     children: [
@@ -112,7 +156,6 @@ class _AssetScreenState extends State<AssetScreen> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           childAspectRatio: 3.4,
-
                           children: [
                             FilterButton(
                               buttonText: "Energy Sensor",
@@ -142,12 +185,29 @@ class _AssetScreenState extends State<AssetScreen> {
                         ),
                       ),
                       Expanded(
-                        child: ListView(
-                          children: filteredNodes
-                              .map((node) => NodeTile(
-                            node: node,
-                          ))
-                              .toList(),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: calculatedWidth,
+                                  maxWidth: calculatedWidth,
+                                ),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: filteredNodes.length,
+                                  itemBuilder: (context, index) {
+                                    return NodeTile(
+                                      node: filteredNodes[index],
+                                      hierarchyLevel: 1,
+                                      onExpansionChanged: _updateMaxHierarchyLevel,
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
