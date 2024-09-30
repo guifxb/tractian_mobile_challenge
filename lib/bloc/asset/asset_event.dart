@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import 'package:equatable/equatable.dart';
+
 abstract class AssetEvent extends Equatable {
   const AssetEvent();
 
@@ -13,16 +15,32 @@ class FetchAssets extends AssetEvent {
   const FetchAssets(this.companyId);
 
   @override
-  List<Object?> get props => [companyId];
+  List<Object> get props => [companyId];
 }
 
-class ApplyFilters extends AssetEvent {
-  final String? searchText;
-  final String? sensorType;
-  final String? status;
+class UpdateSearchQuery extends AssetEvent {
+  final String query;
 
-  const ApplyFilters({this.searchText, this.sensorType, this.status});
+  const UpdateSearchQuery(this.query);
 
   @override
-  List<Object?> get props => [searchText, sensorType, status];
+  List<Object> get props => [query];
+}
+
+class ToggleFilter extends AssetEvent {
+  final String filter;
+
+  const ToggleFilter(this.filter);
+
+  @override
+  List<Object> get props => [filter];
+}
+
+class UpdateMaxHierarchyLevel extends AssetEvent {
+  final int level;
+
+  const UpdateMaxHierarchyLevel(this.level);
+
+  @override
+  List<Object> get props => [level];
 }

@@ -5,6 +5,7 @@ import 'package:tractian_challenge/screens/home_screen.dart';
 import 'bloc/asset/asset_bloc.dart';
 import 'bloc/company/company_bloc.dart';
 import 'bloc/location/location_bloc.dart';
+import 'bloc/node/node_bloc.dart';
 import 'repositories/company_repository.dart';
 import 'repositories/location_repository.dart';
 import 'repositories/asset_repository.dart';
@@ -22,16 +23,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final apiService = ApiService(baseUrl: Config.baseUrl);
 
+    final companyRepository = CompanyRepository(apiService);
+    final locationRepository = LocationRepository(apiService);
+    final assetRepository = AssetRepository(apiService);
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => CompanyBloc(CompanyRepository(apiService)),
+          create: (context) => CompanyBloc(companyRepository),
         ),
         BlocProvider(
-          create: (context) => LocationBloc(LocationRepository(apiService)),
+          create: (context) => LocationBloc(locationRepository),
         ),
         BlocProvider(
-          create: (context) => AssetBloc(AssetRepository(apiService)),
+          create: (context) => AssetBloc(assetRepository),
+        ),
+        BlocProvider(
+          create: (context) => NodeBloc(
+            assetRepository: assetRepository,
+            locationRepository: locationRepository,
+          ),
         ),
       ],
       child: MaterialApp(
