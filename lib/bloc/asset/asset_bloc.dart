@@ -10,14 +10,14 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
     on<FetchAssets>(_onFetchAssets);
   }
 
-  Future<void> _onFetchAssets(
-      FetchAssets event, Emitter<AssetState> emit) async {
+  Future<void> _onFetchAssets(FetchAssets event, Emitter<AssetState> emit) async {
     try {
       emit(AssetLoading());
-      final assets = await assetRepository.fetchAllAssets(event.locationId);
+      final assets = await assetRepository.fetchAssets(event.companyId);
       emit(AssetLoaded(assets));
     } catch (e) {
       emit(AssetError(e.toString()));
     }
   }
+
 }

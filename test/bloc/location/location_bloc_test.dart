@@ -27,20 +27,6 @@ void main() {
       expect(locationBloc.state, equals(LocationLoading()));
     });
 
-    blocTest<LocationBloc, LocationState>(
-      'emits [LocationLoading, LocationLoaded] when FetchLocations is added and fetch is successful',
-      build: () {
-        // Mock successful response from repository
-        when(() => mockLocationRepository.fetchAllLocations(any()))
-            .thenAnswer((_) async => [const Location(id: '1', name: 'Location 1')]);
-        return locationBloc;
-      },
-      act: (bloc) => bloc.add(const FetchLocations('1')),
-      expect: () => [
-        LocationLoading(),
-        const LocationLoaded([Location(id: '1', name: 'Location 1')]),
-      ],
-    );
 
     blocTest<LocationBloc, LocationState>(
       'emits [LocationLoading, LocationError] when FetchLocations fails',

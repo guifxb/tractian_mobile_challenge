@@ -78,6 +78,9 @@ flutter:
   assets:
    - lib/assets/images/tractian_logo.png
    - lib/assets/images/icon_button_company.png
+   - lib/assets/images/asset.png
+   - lib/assets/images/component.png
+   - lib/assets/images/location.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

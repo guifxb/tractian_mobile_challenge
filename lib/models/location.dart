@@ -3,9 +3,13 @@ import 'package:equatable/equatable.dart';
 class Location extends Equatable {
   final String id;
   final String name;
-  final String? parentId;
+  final String parentId;
 
-  const Location({required this.id, required this.name, this.parentId});
+  const Location({
+    required this.id,
+    required this.name,
+    required this.parentId
+  });
 
   @override
   List<Object?> get props => [id, name, parentId];
@@ -14,7 +18,7 @@ class Location extends Equatable {
     return Location(
       id: json['id'],
       name: json['name'],
-      parentId: json['parentId'],
+      parentId: json['parentId'] ?? "",
     );
   }
 }

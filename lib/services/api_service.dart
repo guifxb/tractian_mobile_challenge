@@ -28,8 +28,8 @@ class ApiService {
     return ApiHelper.getData(uri, (json) => Location.fromJson(json), client);
   }
 
-  Future<List<Asset>> fetchAssets(String locationId) async {
-    Uri uri = Uri.parse('$baseUrl/locations/$locationId/assets');
+  Future<List<Asset>> fetchAssets(String companyId) async {
+    Uri uri = Uri.parse('$baseUrl/companies/$companyId/assets');
     return ApiHelper.getData(uri, (json) => Asset.fromJson(json), client);
   }
 }

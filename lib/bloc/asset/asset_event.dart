@@ -8,10 +8,21 @@ abstract class AssetEvent extends Equatable {
 }
 
 class FetchAssets extends AssetEvent {
-  final String locationId;
+  final String companyId;
 
-  const FetchAssets(this.locationId);
+  const FetchAssets(this.companyId);
 
   @override
-  List<Object?> get props => [locationId];
+  List<Object?> get props => [companyId];
+}
+
+class ApplyFilters extends AssetEvent {
+  final String? searchText;
+  final String? sensorType;
+  final String? status;
+
+  const ApplyFilters({this.searchText, this.sensorType, this.status});
+
+  @override
+  List<Object?> get props => [searchText, sensorType, status];
 }

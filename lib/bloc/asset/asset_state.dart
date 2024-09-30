@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../models/asset.dart';
+import '../../models/node.dart';
 
 abstract class AssetState extends Equatable {
   const AssetState();
@@ -10,6 +11,15 @@ abstract class AssetState extends Equatable {
 
 class AssetLoading extends AssetState {}
 
+class AssetError extends AssetState {
+  final String message;
+
+  const AssetError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 class AssetLoaded extends AssetState {
   final List<Asset> assets;
 
@@ -19,11 +29,11 @@ class AssetLoaded extends AssetState {
   List<Object?> get props => [assets];
 }
 
-class AssetError extends AssetState {
-  final String error;
+class AssetFiltered extends AssetState {
+  final List<Asset> filteredAssets;
 
-  const AssetError(this.error);
+  const AssetFiltered(this.filteredAssets);
 
   @override
-  List<Object?> get props => [error];
+  List<Object?> get props => [filteredAssets];
 }

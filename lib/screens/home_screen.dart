@@ -5,6 +5,7 @@ import '../bloc/company/company_bloc.dart';
 import '../bloc/company/company_event.dart';
 import '../bloc/company/company_state.dart';
 import '../widgets/button_unit.dart';
+import 'asset_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -73,6 +74,12 @@ class HomeScreen extends StatelessWidget {
                       return UnitButton(
                         text: companyName,
                         onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AssetScreen(companyId: company.id),
+                            ),
+                          );
                         },
                       );
                     },
